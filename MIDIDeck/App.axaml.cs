@@ -8,6 +8,8 @@ namespace MIDIDeck;
 
 public partial class App : Application
 {
+    private MainWindowViewModel? _mainViewModel;
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -17,10 +19,14 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            _mainViewModel = new MainWindowViewModel();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = _mainViewModel,
             };
+
+            // Подписываемся на событие завершения приложения, чтобы освободить ресурсы
+            desktop.Exit += (_, __) => _mainViewModel?.Dispose();
         }
 
         base.OnFrameworkInitializationCompleted();

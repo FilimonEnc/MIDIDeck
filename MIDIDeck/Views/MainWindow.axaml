@@ -14,7 +14,13 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
+    
+    <!-- Пример: MainWindow.axaml -->
+    <StackPanel>
+        <ComboBox ItemsSource="{Binding Devices}"
+                  SelectedIndex="{Binding SelectedDeviceIndex, Mode=TwoWay}"
+                  Width="300" />
+        <Button Content="Reload devices" Command="{Binding ReloadDevicesCommand}" />
+        <TextBlock Text="{Binding NoteNumber}" Background="Aqua" />
+    </StackPanel>
 </Window>

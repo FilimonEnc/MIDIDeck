@@ -1,0 +1,14 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="400" Height="160"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        x:Class="MIDIDeck.Views.MessageDialog">
+    <StackPanel Margin="12">
+        <TextBlock x:Name="TitleBlock" FontWeight="Bold" FontSize="16" TextWrapping="Wrap" />
+        <TextBlock x:Name="MessageBlock" Margin="0,8,0,12" TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="OkButton" Content="OK" Width="80" IsDefault="True" />
+        </StackPanel>
+    </StackPanel>
+</Window>

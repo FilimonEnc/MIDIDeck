@@ -3,24 +3,76 @@
         xmlns:vm="using:MIDIDeck.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="MIDIDeck.Views.MainWindow"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="MIDIDeck">
+        Title="MIDIDeck"
+        x:Class="MIDIDeck.Views.MainWindow">
+
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
-    
-    <!-- Пример: MainWindow.axaml -->
-    <StackPanel>
-        <ComboBox ItemsSource="{Binding Devices}"
-                  SelectedIndex="{Binding SelectedDeviceIndex, Mode=TwoWay}"
-                  Width="300" />
-        <Button Content="Reload devices" Command="{Binding ReloadDevicesCommand}" />
-        <TextBlock Text="{Binding NoteNumber}" Background="Aqua" />
-    </StackPanel>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" /> <!-- боковая панель -->
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" /> <!-- Header -->
+            <RowDefinition Height="*" />  <!-- Content -->
+            <RowDefinition Height="48" /> <!-- Footer -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF2D2D30" Padding="8">
+            <TextBlock Text="MIDIDeck" VerticalAlignment="Center" Foreground="White" FontSize="18" />
+        </Border>
+
+        <!-- Sidebar -->
+        <!--<Border Grid.Row="1" Grid.Column="0" Background="#FF1E1E1E">
+            <StackPanel Margin="8">
+                <TextBlock Text="Menu" Foreground="White" FontWeight="Bold" Margin="0,0,0,8" />
+                ~1~ Кнопки, растянутые по ширине @1@
+                <Button Content="Home" Margin="0,0,0,6" HorizontalAlignment="Stretch"  Foreground="White"/>
+                <Button Content="Settings" Margin="0,0,0,6" HorizontalAlignment="Stretch" Foreground="White"/>
+                <Button Content="About" Margin="0,0,0,6" HorizontalAlignment="Stretch" Foreground="White"/>
+            </StackPanel>
+        </Border>-->
+        
+        <Border Grid.Row="1" Grid.Column="0" Background="#FF1E1E1E">
+            <StackPanel Margin="8">
+                <TextBlock Text="Menu" Foreground="White" FontWeight="Bold" Margin="0,0,0,8" />
+                <ItemsControl ItemsSource="{Binding MenuItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:MenuItem">
+                            <Button Content="{Binding Text}" 
+                                    HorizontalAlignment="Stretch" 
+                                    Margin="0,0,0,6"
+                                    Command="{Binding Command}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+
+
+
+
+        <!-- Main Content area -->
+        <Border Grid.Row="1" Grid.Column="1" Padding="12">
+            <ContentControl x:Name="PageHost" Content="{Binding}" />
+        </Border>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Background="#FF2D2D30" Padding="8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Footer Button" />
+            </StackPanel>
+        </Border>
+
+    </Grid>
 </Window>

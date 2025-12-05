@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
+using System.Windows.Input;
 using MIDIDeck.Services;
 using NAudio.Midi;
 using ReactiveUI;
@@ -10,7 +11,18 @@ namespace MIDIDeck.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IDisposable
 {
-    private readonly MidiService _midiService = new MidiService();
+    public ObservableCollection<MenuItem> MenuItems { get; } = new ObservableCollection<MenuItem>
+    {
+        new MenuItem("Home", ReactiveCommand.Create(() => { /* действие */ })),
+        new MenuItem("Settings", ReactiveCommand.Create(() => { /* действие */ })),
+        new MenuItem("About", ReactiveCommand.Create(() => { /* действие */ }))
+    };
+  
+    private readonly MidiService _midiService = new();
+
+    private string _noteNumber = string.Empty;
+
+    private int _selectedDeviceIndex;
 
     public MainWindowViewModel()
     {
@@ -22,49 +34,11 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         if (SelectedDeviceIndex >= 0)
         {
             var ok = _midiService.OpenDevice(SelectedDeviceIndex);
-            if (ok)
-            {
-                _midiService.MessageReceived += OnMidiMessage;
-            }
+            if (ok) _midiService.MessageReceived += OnMidiMessage;
         }
 
         ReloadDevicesCommand = ReactiveCommand.Create(ReloadDevices);
     }
-
-    public void ReloadDevices()
-    {
-        Devices.Clear();
-        // Формируем список в виде "index: name" для более однозначного отображения
-        var names = MidiService.GetInputDevices();
-        for (int i = 0; i < names.Count; i++)
-        {
-            Devices.Add($"{i}: {names[i]}");
-        }
-
-        // Если есть устройства и текущий SelectedDeviceIndex вне диапазона — выставим 0
-        if (Devices.Any() && (SelectedDeviceIndex < 0 || SelectedDeviceIndex >= Devices.Count))
-        {
-            SelectedDeviceIndex = 0;
-        }
-        else if (!Devices.Any())
-        {
-            SelectedDeviceIndex = -1;
-            _midiService.CloseDevice();
-        }
-    }
-
-    private void OnMidiMessage(object? sender, MidiInMessageEventArgs e)
-    {
-        if (e.MidiEvent is NoteEvent noteEvent)
-        {
-            if (noteEvent.CommandCode == MidiCommandCode.NoteOn && noteEvent is NoteOnEvent noteOn && noteOn.Velocity > 0)
-            {
-                NoteNumber = noteOn.NoteNumber.ToString();
-            }
-        }
-    }
-
-    private int _selectedDeviceIndex;
 
     public int SelectedDeviceIndex
     {
@@ -99,8 +73,6 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     public ObservableCollection<string> Devices { get; }
 
-    private string _noteNumber = string.Empty;
-
     public string NoteNumber
     {
         get => _noteNumber;
@@ -113,5 +85,44 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     {
         _midiService.MessageReceived -= OnMidiMessage;
         _midiService.Dispose();
+    }
+
+    public void ReloadDevices()
+    {
+        Devices.Clear();
+        // Формируем список в виде "index: name" для более однозначного отображения
+        var names = MidiService.GetInputDevices();
+        for (var i = 0; i < names.Count; i++) Devices.Add($"{i}: {names[i]}");
+
+        // Если есть устройства и текущий SelectedDeviceIndex вне диапазона — выставим 0
+        if (Devices.Any() && (SelectedDeviceIndex < 0 || SelectedDeviceIndex >= Devices.Count))
+        {
+            SelectedDeviceIndex = 0;
+        }
+        else if (!Devices.Any())
+        {
+            SelectedDeviceIndex = -1;
+            _midiService.CloseDevice();
+        }
+    }
+
+    private void OnMidiMessage(object? sender, MidiInMessageEventArgs e)
+    {
+        if (e.MidiEvent is NoteEvent noteEvent)
+            if (noteEvent.CommandCode == MidiCommandCode.NoteOn && noteEvent is NoteOnEvent noteOn &&
+                noteOn.Velocity > 0)
+                NoteNumber = noteOn.NoteNumber.ToString();
+    }
+}
+
+public class MenuItem
+{
+    public string Text { get; }
+    public ReactiveCommand<Unit, Unit> Command { get; }
+
+    public MenuItem(string text, ReactiveCommand<Unit, Unit> command)
+    {
+        Text = text;
+        Command = command;
     }
 }

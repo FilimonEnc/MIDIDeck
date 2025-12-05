@@ -6,7 +6,7 @@ using MIDIDeck.Views;
 
 namespace MIDIDeck;
 
-public partial class App : Application
+public class App : Application
 {
     private MainWindowViewModel? _mainViewModel;
 
@@ -22,7 +22,7 @@ public partial class App : Application
             _mainViewModel = new MainWindowViewModel();
             desktop.MainWindow = new MainWindow
             {
-                DataContext = _mainViewModel,
+                DataContext = _mainViewModel
             };
 
             // Подписываемся на событие завершения приложения, чтобы освободить ресурсы

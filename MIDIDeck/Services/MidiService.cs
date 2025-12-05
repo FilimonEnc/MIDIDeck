@@ -8,22 +8,28 @@ namespace MIDIDeck.Services;
 public class MidiService : IDisposable
 {
     private MidiIn? _midiIn;
-    public bool IsAvailable { get; private set; }
-
-    public event EventHandler<MidiInMessageEventArgs>? MessageReceived;
 
     public MidiService()
     {
         IsAvailable = false;
     }
 
+    public bool IsAvailable { get; private set; }
+
+    public void Dispose()
+    {
+        CloseDevice();
+    }
+
+    public event EventHandler<MidiInMessageEventArgs>? MessageReceived;
+
     public static IReadOnlyList<string> GetInputDevices()
     {
         var list = new List<string>();
         try
         {
-            int count = MidiIn.NumberOfDevices;
-            for (int i = 0; i < count; i++)
+            var count = MidiIn.NumberOfDevices;
+            for (var i = 0; i < count; i++)
             {
                 var caps = MidiIn.DeviceInfo(i);
                 list.Add(caps.ProductName);
@@ -33,6 +39,7 @@ public class MidiService : IDisposable
         {
             // если что-то пошло не так при опросе устройств — вернуть пустой список
         }
+
         return list;
     }
 
@@ -54,7 +61,7 @@ public class MidiService : IDisposable
         CloseDevice();
         try
         {
-            int count = GetDeviceCount();
+            var count = GetDeviceCount();
             if (index < 0 || index >= count) return false;
 
             _midiIn = new MidiIn(index);
@@ -96,17 +103,40 @@ public class MidiService : IDisposable
     {
         if (_midiIn != null)
         {
-            try { _midiIn.Stop(); } catch { }
-            try { _midiIn.MessageReceived -= MidiIn_MessageReceived; } catch { }
-            try { _midiIn.ErrorReceived -= MidiIn_ErrorReceived; } catch { }
-            try { _midiIn.Dispose(); } catch { }
+            try
+            {
+                _midiIn.Stop();
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                _midiIn.MessageReceived -= MidiIn_MessageReceived;
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                _midiIn.ErrorReceived -= MidiIn_ErrorReceived;
+            }
+            catch
+            {
+            }
+
+            try
+            {
+                _midiIn.Dispose();
+            }
+            catch
+            {
+            }
+
             _midiIn = null;
             IsAvailable = false;
         }
-    }
-
-    public void Dispose()
-    {
-        CloseDevice();
     }
 }

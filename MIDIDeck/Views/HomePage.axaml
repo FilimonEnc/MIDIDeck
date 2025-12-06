@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MIDIDeck.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="MIDIDeck.Views.HomePage"
+             x:DataType="vm:HomePageViewModel">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" Margin="10">
+            <!-- Заголовок -->
+            <TextBlock Text="🏠 Главная" FontSize="24" FontWeight="Bold"/>
+            <TextBlock Text="Мониторинг MIDI-устройства" Foreground="Gray"/>
+
+            <!-- Выбор устройства -->
+            <Border Background="#FF2D2D30" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="MIDI-устройство" FontWeight="SemiBold" FontSize="16"/>
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+                        <ComboBox Grid.Column="0" 
+                                  ItemsSource="{Binding Devices}" 
+                                  SelectedIndex="{Binding SelectedDeviceIndex}"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="0,0,10,0"/>
+                        <Button Grid.Column="1" 
+                                Content="🔄 Обновить" 
+                                Command="{Binding ReloadDevicesCommand}"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <TextBlock Text="Статус:" Foreground="Gray"/>
+                        <TextBlock Text="{Binding DeviceStatus}" 
+                                   Foreground="{Binding DeviceStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Мониторинг -->
+            <Border Background="#FF2D2D30" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="15">
+                    <TextBlock Text="Мониторинг MIDI" FontWeight="SemiBold" FontSize="16"/>
+                    
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Spacing="5">
+                            <TextBlock Text="Последняя нота:" Foreground="Gray"/>
+                            <TextBlock Text="{Binding LastNote}" FontSize="32" FontWeight="Bold" Foreground="LimeGreen"/>
+                        </StackPanel>
+                        
+                        <StackPanel Grid.Row="0" Grid.Column="1" Spacing="5">
+                            <TextBlock Text="Последнее действие:" Foreground="Gray"/>
+                            <TextBlock Text="{Binding LastAction}" FontSize="18" TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Информация -->
+            <Border Background="#FF2D2D30" CornerRadius="8" Padding="20">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="ℹ️ Информация" FontWeight="SemiBold" FontSize="16"/>
+                    <TextBlock Text="• Выберите MIDI-устройство выше" Foreground="Gray"/>
+                    <TextBlock Text="• Нажимайте клавиши на устройстве для проверки" Foreground="Gray"/>
+                    <TextBlock Text="• Настройте привязки в разделе 'Привязки'" Foreground="Gray"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
+

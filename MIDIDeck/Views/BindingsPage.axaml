@@ -1,0 +1,169 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MIDIDeck.ViewModels"
+             xmlns:models="using:MIDIDeck.Models"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="MIDIDeck.Views.BindingsPage"
+             x:DataType="vm:BindingsPageViewModel">
+
+    <Grid ColumnDefinitions="350,*" Margin="10">
+        <!-- Список привязок -->
+        <Border Grid.Column="0" Background="#FF2D2D30" CornerRadius="8" Padding="15" Margin="0,0,10,0">
+            <Grid RowDefinitions="Auto,*,Auto">
+                <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,10">
+                    <TextBlock Text="🎹 Привязки клавиш" FontSize="18" FontWeight="Bold"/>
+                    <TextBlock Text="Выберите для редактирования" Foreground="Gray" FontSize="12"/>
+                </StackPanel>
+                
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding Bindings}" 
+                         SelectedItem="{Binding SelectedBinding}"
+                         Background="Transparent">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:KeyBinding">
+                            <Border Background="#FF3D3D40" CornerRadius="6" Padding="12" Margin="0,2">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <TextBlock Text="{Binding MidiNoteNumber, StringFormat='Нота: {0}'}" 
+                                                       Foreground="Gray" FontSize="11"/>
+                                            <TextBlock Text="{Binding ActionType}" 
+                                                       Foreground="CornflowerBlue" FontSize="11"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <Border Grid.Column="1" VerticalAlignment="Center" 
+                                            Width="12" Height="12" CornerRadius="6">
+                                        <Border.Styles>
+                                            <Style Selector="Border">
+                                                <Setter Property="Background" Value="LimeGreen"/>
+                                            </Style>
+                                        </Border.Styles>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                
+                <Button Grid.Row="2" Content="➕ Новая привязка" 
+                        Command="{Binding AddBindingCommand}"
+                        HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- Редактор -->
+        <Border Grid.Column="1" Background="#FF2D2D30" CornerRadius="8" Padding="20"
+                IsVisible="{Binding IsEditing}">
+            <ScrollViewer>
+                <StackPanel Spacing="15">
+                    <TextBlock Text="✏️ Редактирование" FontSize="18" FontWeight="Bold"/>
+
+                    <!-- Название -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Название"/>
+                        <TextBox Text="{Binding EditName}" Watermark="Введите название..."/>
+                    </StackPanel>
+
+                    <!-- MIDI нота -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="MIDI нота (0-127)"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <NumericUpDown Grid.Column="0" Value="{Binding EditMidiNote}" 
+                                           Minimum="0" Maximum="127" Margin="0,0,10,0"/>
+                            <Button Grid.Column="1" 
+                                    Command="{Binding StartListeningCommand}">
+                                <Button.Content>
+                                    <Panel>
+                                        <TextBlock Text="🎹 Захватить" IsVisible="{Binding !IsListening}"/>
+                                        <TextBlock Text="🎧 Слушаю..." IsVisible="{Binding IsListening}"/>
+                                    </Panel>
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Тип действия -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Тип действия"/>
+                        <ComboBox ItemsSource="{Binding ActionTypes}" 
+                                  SelectedItem="{Binding EditActionType}"
+                                  HorizontalAlignment="Stretch"/>
+                    </StackPanel>
+
+                    <!-- Значение -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Значение (путь/URL/команда/клавиша)"/>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBox Grid.Column="0" Text="{Binding EditActionValue}" 
+                                     Watermark="Введите значение..." Margin="0,0,10,0"/>
+                            <Button Grid.Column="1" Content="📁" Command="{Binding BrowseFileCommand}"
+                                    ToolTip.Tip="Выбрать файл"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Быстрый выбор F-клавиш -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Быстрый выбор клавиши (F13-F24)"/>
+                        <WrapPanel>
+                            <Button Content="F13" Margin="3" Padding="10,5" Tag="F13"/>
+                            <Button Content="F14" Margin="3" Padding="10,5" Tag="F14"/>
+                            <Button Content="F15" Margin="3" Padding="10,5" Tag="F15"/>
+                            <Button Content="F16" Margin="3" Padding="10,5" Tag="F16"/>
+                            <Button Content="F17" Margin="3" Padding="10,5" Tag="F17"/>
+                            <Button Content="F18" Margin="3" Padding="10,5" Tag="F18"/>
+                            <Button Content="F19" Margin="3" Padding="10,5" Tag="F19"/>
+                            <Button Content="F20" Margin="3" Padding="10,5" Tag="F20"/>
+                            <Button Content="F21" Margin="3" Padding="10,5" Tag="F21"/>
+                            <Button Content="F22" Margin="3" Padding="10,5" Tag="F22"/>
+                            <Button Content="F23" Margin="3" Padding="10,5" Tag="F23"/>
+                            <Button Content="F24" Margin="3" Padding="10,5" Tag="F24"/>
+                        </WrapPanel>
+                    </StackPanel>
+
+                    <!-- Аргументы запуска -->
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Аргументы запуска (опционально)"/>
+                        <TextBox Text="{Binding EditLaunchArguments}" 
+                                 Watermark="Дополнительные аргументы..."/>
+                    </StackPanel>
+
+                    <!-- Опции -->
+                    <StackPanel Spacing="10">
+                        <CheckBox Content="Запускать от имени администратора" 
+                                  IsChecked="{Binding EditRunAsAdmin}"/>
+                        <CheckBox Content="Привязка активна" 
+                                  IsChecked="{Binding EditIsEnabled}"/>
+                    </StackPanel>
+
+                    <!-- Кнопки -->
+                    <Grid ColumnDefinitions="*,*,*" Margin="0,20,0,0">
+                        <Button Grid.Column="0" Content="💾 Сохранить" 
+                                Command="{Binding SaveBindingCommand}"
+                                HorizontalAlignment="Stretch" Margin="0,0,5,0"/>
+                        <Button Grid.Column="1" Content="🗑️ Удалить" 
+                                Command="{Binding DeleteBindingCommand}"
+                                HorizontalAlignment="Stretch" Margin="5,0"/>
+                        <Button Grid.Column="2" Content="❌ Отмена" 
+                                Command="{Binding CancelEditCommand}"
+                                HorizontalAlignment="Stretch" Margin="5,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Placeholder когда не редактируем -->
+        <Border Grid.Column="1" Background="#FF2D2D30" CornerRadius="8" Padding="20"
+                IsVisible="{Binding !IsEditing}">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
+                <TextBlock Text="👈" FontSize="48" HorizontalAlignment="Center"/>
+                <TextBlock Text="Выберите привязку для редактирования" 
+                           Foreground="Gray" TextAlignment="Center" FontSize="14"/>
+                <TextBlock Text="или создайте новую" 
+                           Foreground="Gray" TextAlignment="Center" FontSize="14"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

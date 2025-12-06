@@ -1,13 +1,14 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:MIDIDeck.ViewModels"
+        xmlns:views="using:MIDIDeck.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
         x:DataType="vm:MainWindowViewModel"
         Title="MIDIDeck"
-        x:Class="MIDIDeck.Views.MainWindow">
-
+        x:Class="MIDIDeck.Views.MainWindow"
+        MinWidth="900" MinHeight="600">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -23,55 +24,53 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="48" /> <!-- Header -->
             <RowDefinition Height="*" />  <!-- Content -->
-            <RowDefinition Height="48" /> <!-- Footer -->
+            <RowDefinition Height="32" /> <!-- Footer -->
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF2D2D30" Padding="8">
-            <TextBlock Text="MIDIDeck" VerticalAlignment="Center" Foreground="White" FontSize="18" />
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="#FF2D2D30" Padding="12,8">
+            <TextBlock Text="🎹 MIDIDeck" VerticalAlignment="Center" Foreground="White" FontSize="18" FontWeight="Bold"/>
         </Border>
 
         <!-- Sidebar -->
-        <!--<Border Grid.Row="1" Grid.Column="0" Background="#FF1E1E1E">
-            <StackPanel Margin="8">
-                <TextBlock Text="Menu" Foreground="White" FontWeight="Bold" Margin="0,0,0,8" />
-                ~1~ Кнопки, растянутые по ширине @1@
-                <Button Content="Home" Margin="0,0,0,6" HorizontalAlignment="Stretch"  Foreground="White"/>
-                <Button Content="Settings" Margin="0,0,0,6" HorizontalAlignment="Stretch" Foreground="White"/>
-                <Button Content="About" Margin="0,0,0,6" HorizontalAlignment="Stretch" Foreground="White"/>
-            </StackPanel>
-        </Border>-->
-        
         <Border Grid.Row="1" Grid.Column="0" Background="#FF1E1E1E">
             <StackPanel Margin="8">
-                <TextBlock Text="Menu" Foreground="White" FontWeight="Bold" Margin="0,0,0,8" />
+                <TextBlock Text="Меню" Foreground="Gray" FontWeight="Bold" Margin="8,0,0,12" FontSize="12"/>
                 <ItemsControl ItemsSource="{Binding MenuItems}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:MenuItem">
                             <Button Content="{Binding Text}" 
                                     HorizontalAlignment="Stretch" 
-                                    Margin="0,0,0,6"
-                                    Command="{Binding Command}" />
+                                    HorizontalContentAlignment="Left"
+                                    Margin="0,0,0,4"
+                                    Padding="12,10"
+                                    Command="{Binding Command}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </StackPanel>
         </Border>
 
-
-
-
-
-        <!-- Main Content area -->
-        <Border Grid.Row="1" Grid.Column="1" Padding="12">
-            <ContentControl x:Name="PageHost" Content="{Binding}" />
+        <!-- Main Content -->
+        <Border Grid.Row="1" Grid.Column="1" Background="#FF252526" Padding="10">
+            <ContentControl Content="{Binding CurrentPage}">
+                <ContentControl.DataTemplates>
+                    <DataTemplate DataType="vm:HomePageViewModel">
+                        <views:HomePage/>
+                    </DataTemplate>
+                    <DataTemplate DataType="vm:BindingsPageViewModel">
+                        <views:BindingsPage/>
+                    </DataTemplate>
+                    <DataTemplate DataType="vm:SettingsPageViewModel">
+                        <views:SettingsPage/>
+                    </DataTemplate>
+                </ContentControl.DataTemplates>
+            </ContentControl>
         </Border>
 
         <!-- Footer -->
-        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Background="#FF2D2D30" Padding="8">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Footer Button" />
-            </StackPanel>
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Background="#FF2D2D30" Padding="12,4">
+            <TextBlock Text="MIDIDeck © 2024" Foreground="Gray" FontSize="11" VerticalAlignment="Center"/>
         </Border>
 
     </Grid>
